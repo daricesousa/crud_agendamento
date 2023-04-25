@@ -4,13 +4,13 @@ class AppointmentModel {
   final String id;
   final String name;
   final DateTime date;
-  final String fone;
+  final String? fone;
 
   AppointmentModel({
     this.id = '',
     required this.name,
     required this.date,
-    this.fone = '',
+    this.fone,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,7 +26,7 @@ class AppointmentModel {
       id: map['id'],
       name: map['name'] ?? '',
       date: DateTime.parse(map['date']),
-      fone: Validations.foneIsValid(map['fone']) ? map['fone'] : '',
+      fone: Validations.foneIsValid(map['fone']) ? map['fone'] : null,
     );
   }
 

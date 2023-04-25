@@ -35,7 +35,7 @@ class HomePage extends GetView<HomeController> {
                     itemCard(
                         icon: Icons.phone,
                         text: Formatters.foneDisplay(appointment.fone),
-                        visible: appointment.fone.isNotEmpty),
+                        visible: appointment.fone != null),
                   ],
                 ),
               ),

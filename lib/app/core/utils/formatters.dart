@@ -14,8 +14,8 @@ class Formatters {
     return "${hour}h$minute";
   }
 
-  static String foneDisplay(String fone) {
-    return fone;
+  static String foneDisplay(String? fone) {
+    if (fone == null) return '';
     final ddd = fone.substring(0, 2);
     final first = fone.substring(2, 7);
     final second = fone.substring(7, 11);
