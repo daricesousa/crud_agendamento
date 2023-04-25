@@ -1,3 +1,5 @@
+import 'package:crud_agendamento/app/core/utils/validations.dart';
+
 class ScheduleModel {
   final String id;
   final String name;
@@ -24,7 +26,7 @@ class ScheduleModel {
       id: map['id'],
       name: map['name'] ?? '',
       date: DateTime.parse(map['date']),
-      fone: map['fone'] ?? '',
+      fone: Validations.foneIsValid(map['fone']) ? map['fone'] : '',
     );
   }
 
