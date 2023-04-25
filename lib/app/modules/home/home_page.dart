@@ -11,9 +11,9 @@ class HomePage extends GetView<HomeController> {
     return Scaffold(
         body: Obx(
       () => ListView.builder(
-        itemCount: controller.schedules.length,
+        itemCount: controller.appointments.length,
         itemBuilder: (context, index) {
-          final schedule = controller.schedules[index];
+          final appointment = controller.appointments[index];
           return ListTile(
             title: Wrap(
               alignment: WrapAlignment.spaceBetween,
@@ -21,27 +21,27 @@ class HomePage extends GetView<HomeController> {
                 Wrap(
                   children: [
                     const Icon(Icons.person),
-                    Text(schedule.name),
+                    Text(appointment.name),
                   ],
                 ),
                 Wrap(
                   children: [
                     const Icon(Icons.calendar_month),
-                    Text(Formatters.dateDisplay(schedule.date)),
+                    Text(Formatters.dateDisplay(appointment.date)),
                   ],
                 ),
                 Wrap(
                   children: [
                     const Icon(Icons.timer),
-                    Text(Formatters.hourDisplay(schedule.date)),
+                    Text(Formatters.hourDisplay(appointment.date)),
                   ],
                 ),
                 Visibility(
-                  visible: schedule.fone.isNotEmpty,
+                  visible: appointment.fone.isNotEmpty,
                   child: Wrap(
                     children: [
                       const Icon(Icons.phone),
-                      Text(Formatters.foneDisplay(schedule.fone)),
+                      Text(Formatters.foneDisplay(appointment.fone)),
                     ],
                   ),
                 ),

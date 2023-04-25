@@ -1,23 +1,23 @@
-import 'package:crud_agendamento/app/models/schedule_model.dart';
-import 'package:crud_agendamento/app/repositories/schedule_repository.dart';
+import 'package:crud_agendamento/app/models/appointment_model.dart';
+import 'package:crud_agendamento/app/repositories/appointment_repository.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  final ScheduleRepository _repository;
-  final schedules = <ScheduleModel>[].obs;
+  final AppointmentRepository _repository;
+  final appointments = <AppointmentModel>[].obs;
 
   @override
   onReady() {
-    getSchedules();
+    getAppointments();
     super.onReady();
   }
 
   HomeController({
-    required ScheduleRepository repository,
+    required AppointmentRepository repository,
   }) : _repository = repository;
 
-  Future<void> getSchedules() async {
-    final result = await _repository.getSchedules();
-    schedules.value = result;
+  Future<void> getAppointments() async {
+    final result = await _repository.getAppointments();
+    appointments.value = result;
   }
 }

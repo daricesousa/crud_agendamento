@@ -1,5 +1,6 @@
 abstract class RestClient {
-  final baseURL = 'https://6446899b0431e885f01501b3.mockapi.io/api/v1/schedule';
+  final baseURL =
+      'https://6446899b0431e885f01501b3.mockapi.io/api/v1/appointment';
 
   Future<dynamic> get(String path, {Map<String, dynamic>? query});
   Future<dynamic> post(String path,

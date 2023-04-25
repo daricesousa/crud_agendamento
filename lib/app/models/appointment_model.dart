@@ -1,12 +1,12 @@
 import 'package:crud_agendamento/app/core/utils/validations.dart';
 
-class ScheduleModel {
+class AppointmentModel {
   final String id;
   final String name;
   final DateTime date;
   final String fone;
 
-  ScheduleModel({
+  AppointmentModel({
     this.id = '',
     required this.name,
     required this.date,
@@ -21,8 +21,8 @@ class ScheduleModel {
     };
   }
 
-  factory ScheduleModel.fromMap(map) {
-    return ScheduleModel(
+  factory AppointmentModel.fromMap(map) {
+    return AppointmentModel(
       id: map['id'],
       name: map['name'] ?? '',
       date: DateTime.parse(map['date']),
@@ -32,6 +32,6 @@ class ScheduleModel {
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, name: $name, date: $date, fone: $fone)';
+    return 'AppointmentModel(id: $id, name: $name, date: $date, fone: $fone)';
   }
 }
