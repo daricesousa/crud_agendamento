@@ -9,11 +9,13 @@ import 'package:mask/mask/mask.dart';
 
 class AppointmentFormDialog extends StatefulWidget {
   final String title;
+  final AppointmentModel? appointmentEdit;
   final Future<void> Function(AppointmentModel) callback;
   const AppointmentFormDialog({
     super.key,
     this.title = '',
     required this.callback,
+    this.appointmentEdit,
   });
 
   @override
@@ -31,6 +33,22 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
     editName.dispose();
     editFone.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    if (widget.appointmentEdit != null) {
+      loadAppointment();
+    }
+    super.initState();
+  }
+
+  void loadAppointment() {
+    final AppointmentModel appointment = widget.appointmentEdit!;
+    editDate = appointment.date;
+    editTime = TimeOfDay.fromDateTime(appointment.date);
+    editName.text = appointment.name;
+    editFone.text = appointment.fone ?? '';
   }
 
   @override
@@ -110,6 +128,7 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                             editDate ??= DateTime.now();
                             editTime ??= TimeOfDay.now();
                             final newAppointment = AppointmentModel(
+                              id: widget.appointmentEdit?.id ?? '',
                               name: editName.text,
                               fone: editFone.text,
                               date: DateTime(

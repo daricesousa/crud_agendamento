@@ -17,6 +17,7 @@ class HomePage extends GetView<HomeController> {
             onPressed: () async {
               openDialog(
                 context: context,
+                title: "Novo agendamento",
                 callback: controller.addAppointment,
               );
             }),
@@ -47,6 +48,10 @@ class HomePage extends GetView<HomeController> {
                             text: appointment.fone ?? '',
                             visible: appointment.fone != null,
                             sizes: Sizes.col3),
+                        actionsCard(
+                          context: context,
+                          appointment: appointment,
+                        ),
                       ],
                     ),
                   ),
@@ -78,15 +83,37 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
+  ResponsiveCol actionsCard(
+      {required BuildContext context, required AppointmentModel appointment}) {
+    return ResponsiveCol(
+        lg: Sizes.col1,
+        md: Sizes.col1,
+        sm: Sizes.col1,
+        child: IconButton(
+            onPressed: () {
+              openDialog(
+                context: context,
+                callback: controller.editAppointment,
+                appointmentEdit: appointment,
+                title: "Editar agendamento",
+              );
+            },
+            icon: const Icon(Icons.edit_document)));
+  }
+
   Future<AppointmentModel?> openDialog(
       {required BuildContext context,
-      AppointmentModel? appointment,
-      required Future<void> Function(AppointmentModel) callback}) async {
+      AppointmentModel? appointmentEdit,
+      required Future<void> Function(AppointmentModel) callback,
+      String title = ''}) async {
     return await showDialog<AppointmentModel>(
         context: context,
         builder: (context) {
           return AppointmentFormDialog(
-              title: "Novo agendamento", callback: callback);
+            title: title,
+            callback: callback,
+            appointmentEdit: appointmentEdit,
+          );
         });
   }
 }

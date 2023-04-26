@@ -32,4 +32,11 @@ class HomeController extends GetxController {
       AppSnackBar.error(message: 'Erro ao realizar agendamento');
     }
   }
+
+  Future<void> editAppointment(AppointmentModel appointment) async {
+    final index =
+        appointments.indexWhere((element) => element.id == appointment.id);
+    appointments[index] = appointment;
+    Get.back();
+  }
 }

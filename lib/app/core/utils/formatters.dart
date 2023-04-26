@@ -10,6 +10,6 @@ class Formatters {
 
   static String hourDisplay(DateTime? date) {
     if (date == null) return '';
-    return DateFormat('hh:mm').format(date);
+    return DateFormat('HH:mm').format(date);
   }
 }
