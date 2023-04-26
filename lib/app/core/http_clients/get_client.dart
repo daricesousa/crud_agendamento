@@ -45,7 +45,7 @@ class GetClient extends RestClient {
     required Map<String, dynamic> data,
     query,
   }) async {
-    final res = await _client.post(path, data, query: query);
+    final res = await _client.put(path, data, query: query);
     _exception(res);
     return res.body;
   }

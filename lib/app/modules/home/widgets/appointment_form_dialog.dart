@@ -82,7 +82,12 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
               label: "Telefone",
               textInputType: TextInputType.phone,
               inputFormatters: [Mask.phone()],
-              validator: Mask.validations.phone,
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  return Mask.validations.phone(value);
+                }
+                return null;
+              },
               controller: editFone,
             ),
             const SizedBox(height: 10),

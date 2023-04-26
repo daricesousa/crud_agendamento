@@ -1,4 +1,5 @@
 import 'package:crud_agendamento/app/core/utils/formatters.dart';
+import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_form_dialog.dart';
@@ -89,16 +90,25 @@ class HomePage extends GetView<HomeController> {
         lg: Sizes.col1,
         md: Sizes.col1,
         sm: Sizes.col1,
-        child: IconButton(
-            onPressed: () {
-              openDialog(
-                context: context,
-                callback: controller.editAppointment,
-                appointmentEdit: appointment,
-                title: "Editar agendamento",
-              );
-            },
-            icon: const Icon(Icons.edit_document)));
+        child: Visibility(
+          visible: appointment.date.isAfter(DateTime.now()),
+          child: IconButton(
+              onPressed: () {
+                if (appointment.date.isBefore(DateTime.now())) {
+                  AppSnackBar.error(
+                      message:
+                          "Não é possível editar um agendamento que já passou");
+                } else {
+                  openDialog(
+                    context: context,
+                    callback: controller.editAppointment,
+                    appointmentEdit: appointment,
+                    title: "Editar agendamento",
+                  );
+                }
+              },
+              icon: const Icon(Icons.edit_document)),
+        ));
   }
 
   Future<AppointmentModel?> openDialog(
@@ -107,6 +117,7 @@ class HomePage extends GetView<HomeController> {
       required Future<void> Function(AppointmentModel) callback,
       String title = ''}) async {
     return await showDialog<AppointmentModel>(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AppointmentFormDialog(

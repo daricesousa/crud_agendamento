@@ -1,4 +1,4 @@
-import 'package:crud_agendamento/app/core/widgets/app_scack_bar.dart';
+import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/repositories/appointment_repository.dart';
 import 'package:get/get.dart';
@@ -34,9 +34,14 @@ class HomeController extends GetxController {
   }
 
   Future<void> editAppointment(AppointmentModel appointment) async {
-    final index =
-        appointments.indexWhere((element) => element.id == appointment.id);
-    appointments[index] = appointment;
-    Get.back();
+    try {
+      final index =
+          appointments.indexWhere((element) => element.id == appointment.id);
+      appointments[index] = await _repository.putAppointment(appointment);
+      Get.back();
+      AppSnackBar.success(message: 'Agendamento atualizado');
+    } catch (e) {
+      AppSnackBar.error(message: 'Erro ao atualizar agendamento');
+    }
   }
 }
