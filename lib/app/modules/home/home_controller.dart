@@ -20,4 +20,8 @@ class HomeController extends GetxController {
     final result = await _repository.getAppointments();
     appointments.value = result;
   }
+
+  void addAppointment(AppointmentModel res) {
+    appointments.add(res);
+  }
 }
