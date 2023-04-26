@@ -9,7 +9,12 @@ import 'package:mask/mask/mask.dart';
 
 class AppointmentFormDialog extends StatefulWidget {
   final String title;
-  const AppointmentFormDialog({super.key, this.title = ''});
+  final Future<void> Function(AppointmentModel) callback;
+  const AppointmentFormDialog({
+    super.key,
+    this.title = '',
+    required this.callback,
+  });
 
   @override
   State<AppointmentFormDialog> createState() => _AppointmentFormDialogState();
@@ -30,6 +35,7 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loading = ValueNotifier<bool>(false);
     final formKey = GlobalKey<FormState>();
 
     return Dialog(
@@ -92,21 +98,33 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                   label: "Cancelar",
                 ),
                 const SizedBox(width: 10),
-                AppButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      editDate ??= DateTime.now();
-                      editTime ??= TimeOfDay.now();
-                      final newAppointment = AppointmentModel(
-                        name: editName.text,
-                        fone: editFone.text,
-                        date: DateTime(editDate!.year, editDate!.month,
-                            editDate!.day, editTime!.hour, editTime!.minute),
+                AnimatedBuilder(
+                    animation: loading,
+                    builder: (context, snapshot) {
+                      return AppButton(
+                        loading: loading.value,
+                        onPressed: () async {
+                          if (!loading.value &&
+                              formKey.currentState!.validate()) {
+                            loading.value = true;
+                            editDate ??= DateTime.now();
+                            editTime ??= TimeOfDay.now();
+                            final newAppointment = AppointmentModel(
+                              name: editName.text,
+                              fone: editFone.text,
+                              date: DateTime(
+                                  editDate!.year,
+                                  editDate!.month,
+                                  editDate!.day,
+                                  editTime!.hour,
+                                  editTime!.minute),
+                            );
+                            await widget.callback.call(newAppointment);
+                            loading.value = false;
+                          }
+                        },
                       );
-                      Get.back(result: newAppointment);
-                    }
-                  },
-                ),
+                    }),
               ],
             )
           ],

@@ -5,6 +5,7 @@ class AppButton extends StatelessWidget {
   final Color? color;
   final Color? colorLabel;
   final double? height;
+  final bool loading;
   final Function() onPressed;
 
   const AppButton(
@@ -13,7 +14,8 @@ class AppButton extends StatelessWidget {
       required this.onPressed,
       this.color,
       this.colorLabel,
-      this.height})
+      this.height,
+      this.loading = false})
       : super(key: key);
 
   @override
@@ -26,9 +28,18 @@ class AppButton extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all(color),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18)))),
-        child: Text(
-          label,
-          style: TextStyle(color: colorLabel),
+        child: Visibility(
+          visible: !loading,
+          replacement: const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              )),
+          child: Text(
+            label,
+            style: TextStyle(color: colorLabel),
+          ),
         ),
       ),
     );

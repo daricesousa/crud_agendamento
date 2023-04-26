@@ -13,14 +13,13 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            final res = await openDialog(context: context);
-            if (res != null) {
-              controller.addAppointment(res);
-            }
-          },
-        ),
+            child: const Icon(Icons.add),
+            onPressed: () async {
+              openDialog(
+                context: context,
+                callback: controller.addAppointment,
+              );
+            }),
         body: Obx(
           () => ListView.builder(
             itemCount: controller.appointments.length,
@@ -80,13 +79,14 @@ class HomePage extends GetView<HomeController> {
   }
 
   Future<AppointmentModel?> openDialog(
-      {required BuildContext context, AppointmentModel? appointment}) async {
+      {required BuildContext context,
+      AppointmentModel? appointment,
+      required Future<void> Function(AppointmentModel) callback}) async {
     return await showDialog<AppointmentModel>(
         context: context,
         builder: (context) {
-          return const AppointmentFormDialog(
-            title: "Novo agendamento",
-          );
+          return AppointmentFormDialog(
+              title: "Novo agendamento", callback: callback);
         });
   }
 }

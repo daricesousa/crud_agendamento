@@ -14,4 +14,10 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     final result = await _restClient.get('/');
     return result.map<AppointmentModel>(AppointmentModel.fromMap).toList();
   }
+
+  @override
+  Future<AppointmentModel> postAppointment(AppointmentModel appointment) async {
+    final result = await _restClient.post('/', data: appointment.toMap());
+    return AppointmentModel.fromMap(result);
+  }
 }

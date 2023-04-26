@@ -16,7 +16,7 @@ class AppointmentModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
-      'date': date.millisecondsSinceEpoch,
+      'date': date.toIso8601String(),
       'fone': fone,
     };
   }
