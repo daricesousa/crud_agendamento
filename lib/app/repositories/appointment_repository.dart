@@ -6,4 +6,6 @@ abstract class AppointmentRepository {
   Future<AppointmentModel> postAppointment(AppointmentModel appointment);
 
   Future<AppointmentModel> putAppointment(AppointmentModel appointment);
+
+  Future<AppointmentModel> deleteAppointment(AppointmentModel appointment);
 }

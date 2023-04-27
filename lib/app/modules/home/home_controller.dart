@@ -44,4 +44,15 @@ class HomeController extends GetxController {
       AppSnackBar.error(message: 'Erro ao atualizar agendamento');
     }
   }
+
+  Future<void> deleteAppointment(AppointmentModel appointment) async {
+    try {
+      await _repository.deleteAppointment(appointment);
+      appointments.remove(appointment);
+      Get.back();
+      AppSnackBar.success(message: 'Agendamento deletado');
+    } catch (e) {
+      AppSnackBar.error(message: 'Erro ao deletar agendamento');
+    }
+  }
 }

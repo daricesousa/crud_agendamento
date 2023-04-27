@@ -27,4 +27,11 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
         await _restClient.put('/${appointment.id}', data: appointment.toMap());
     return AppointmentModel.fromMap(result);
   }
+
+  @override
+  Future<AppointmentModel> deleteAppointment(
+      AppointmentModel appointment) async {
+    final result = await _restClient.delete('/${appointment.id}');
+    return AppointmentModel.fromMap(result);
+  }
 }

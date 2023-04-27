@@ -2,6 +2,7 @@ import 'package:crud_agendamento/app/core/utils/formatters.dart';
 import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
+import 'package:crud_agendamento/app/modules/home/widgets/appointment_delete_dialog.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_form_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -41,9 +42,9 @@ class HomePage extends GetView<HomeController> {
                             icon: Icons.calendar_month,
                             text: Formatters.dateDisplay(appointment.date)),
                         itemCard(
-                          icon: Icons.timer,
-                          text: Formatters.hourDisplay(appointment.date),
-                        ),
+                            icon: Icons.timer,
+                            text: Formatters.hourDisplay(appointment.date),
+                            sizes: Sizes.col1),
                         itemCard(
                             icon: Icons.phone,
                             text: appointment.fone ?? '',
@@ -87,27 +88,46 @@ class HomePage extends GetView<HomeController> {
   ResponsiveCol actionsCard(
       {required BuildContext context, required AppointmentModel appointment}) {
     return ResponsiveCol(
-        lg: Sizes.col1,
-        md: Sizes.col1,
-        sm: Sizes.col1,
-        child: Visibility(
-          visible: appointment.date.isAfter(DateTime.now()),
-          child: IconButton(
-              onPressed: () {
-                if (appointment.date.isBefore(DateTime.now())) {
-                  AppSnackBar.error(
-                      message:
-                          "Não é possível editar um agendamento que já passou");
-                } else {
-                  openDialog(
-                    context: context,
-                    callback: controller.editAppointment,
-                    appointmentEdit: appointment,
-                    title: "Editar agendamento",
-                  );
-                }
-              },
-              icon: const Icon(Icons.edit_document)),
+        lg: Sizes.col2,
+        md: Sizes.col2,
+        sm: Sizes.col12,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Visibility(
+              visible: appointment.date.isAfter(DateTime.now()),
+              child: IconButton(
+                  onPressed: () {
+                    if (appointment.date.isBefore(DateTime.now())) {
+                      AppSnackBar.error(
+                          message:
+                              "Não é possível editar um agendamento que já passou");
+                    } else {
+                      openDialog(
+                        context: context,
+                        callback: controller.editAppointment,
+                        appointmentEdit: appointment,
+                        title: "Editar agendamento",
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.edit_document)),
+            ),
+            IconButton(
+                onPressed: () async {
+                  await showDialog<AppointmentModel>(
+                      context: context,
+                      builder: (context) {
+                        return AppointmentDeleteDialog(
+                          appointment: appointment,
+                          callback: () async {
+                            await controller.deleteAppointment(appointment);
+                          },
+                        );
+                      });
+                },
+                icon: const Icon(Icons.delete)),
+          ],
         ));
   }
 
