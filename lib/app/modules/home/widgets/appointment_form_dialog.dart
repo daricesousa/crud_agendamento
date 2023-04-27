@@ -57,101 +57,104 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
     final formKey = GlobalKey<FormState>();
 
     return Dialog(
-        child: SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            Text(
-              widget.title,
-              style: context.textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 10),
-            AppFormField(
-                label: "Nome",
-                controller: editName,
+        child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Text(
+                widget.title,
+                style: context.textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 20),
+              AppFormField(
+                  label: "Nome",
+                  controller: editName,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Campo obrigatório";
+                    }
+                    return null;
+                  }),
+              const SizedBox(height: 10),
+              AppFormField(
+                label: "Telefone",
+                textInputType: TextInputType.phone,
+                inputFormatters: [Mask.phone()],
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Campo obrigatório";
+                  if (value != null && value.isNotEmpty) {
+                    return Mask.validations.phone(value);
                   }
                   return null;
-                }),
-            const SizedBox(height: 10),
-            AppFormField(
-              label: "Telefone",
-              textInputType: TextInputType.phone,
-              inputFormatters: [Mask.phone()],
-              validator: (value) {
-                if (value != null && value.isNotEmpty) {
-                  return Mask.validations.phone(value);
-                }
-                return null;
-              },
-              controller: editFone,
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: AppDate(
-                    label: "Selecione a data",
-                    initial: editDate,
-                    confirm: (date) => editDate = date,
+                },
+                controller: editFone,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: AppDate(
+                      label: "Selecione a data",
+                      initial: editDate,
+                      confirm: (date) => editDate = date,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Flexible(
-                  flex: 1,
-                  child: AppTime(
-                    label: "Selecione a hora",
-                    initial: editTime,
-                    confirm: (time) => editTime = time,
+                  const SizedBox(width: 10),
+                  Flexible(
+                    flex: 1,
+                    child: AppTime(
+                      label: "Selecione a hora",
+                      initial: editTime,
+                      confirm: (time) => editTime = time,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                AppButton(
-                  onPressed: () => Get.back(),
-                  label: "Cancelar",
-                ),
-                const SizedBox(width: 10),
-                AnimatedBuilder(
-                    animation: loading,
-                    builder: (context, snapshot) {
-                      return AppButton(
-                        loading: loading.value,
-                        onPressed: () async {
-                          if (!loading.value &&
-                              formKey.currentState!.validate()) {
-                            loading.value = true;
-                            editDate ??= DateTime.now();
-                            editTime ??= TimeOfDay.now();
-                            final newAppointment = AppointmentModel(
-                              id: widget.appointmentEdit?.id ?? '',
-                              name: editName.text,
-                              fone: editFone.text,
-                              date: DateTime(
-                                  editDate!.year,
-                                  editDate!.month,
-                                  editDate!.day,
-                                  editTime!.hour,
-                                  editTime!.minute),
-                            );
-                            await widget.callback.call(newAppointment);
-                            loading.value = false;
-                          }
-                        },
-                      );
-                    }),
-              ],
-            )
-          ],
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AppButton(
+                    onPressed: () => Get.back(),
+                    label: "Cancelar",
+                  ),
+                  const SizedBox(width: 10),
+                  AnimatedBuilder(
+                      animation: loading,
+                      builder: (context, snapshot) {
+                        return AppButton(
+                          loading: loading.value,
+                          onPressed: () async {
+                            if (!loading.value &&
+                                formKey.currentState!.validate()) {
+                              loading.value = true;
+                              editDate ??= DateTime.now();
+                              editTime ??= TimeOfDay.now();
+                              final newAppointment = AppointmentModel(
+                                id: widget.appointmentEdit?.id ?? '',
+                                name: editName.text,
+                                fone: editFone.text,
+                                date: DateTime(
+                                    editDate!.year,
+                                    editDate!.month,
+                                    editDate!.day,
+                                    editTime!.hour,
+                                    editTime!.minute),
+                              );
+                              await widget.callback.call(newAppointment);
+                              loading.value = false;
+                            }
+                          },
+                        );
+                      }),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     ));

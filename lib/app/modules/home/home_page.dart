@@ -25,8 +25,11 @@ class HomePage extends GetView<HomeController> {
             }),
         body: Obx(
           () => ListView.builder(
-            itemCount: controller.appointments.length,
+            itemCount: controller.appointments.length + 1,
             itemBuilder: (context, index) {
+              if (index == controller.appointments.length) {
+                return const SizedBox(height: 75);
+              }
               final appointment = controller.appointments[index];
               return ResponsiveCol(
                 child: Card(
