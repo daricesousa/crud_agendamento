@@ -100,7 +100,10 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                     child: AppDate(
                       label: "Selecione a data",
                       initial: editDate,
-                      confirm: (date) => editDate = date,
+                      callback: (date) {
+                        Get.back();
+                        editDate = date;
+                      },
                     ),
                   ),
                   const SizedBox(width: 10),

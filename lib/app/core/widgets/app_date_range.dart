@@ -28,7 +28,8 @@ class _AppDateRangeState extends State<AppDateRange> {
       icon: const Icon(Icons.calendar_month),
       onPressed: () async {
         final calendar = CleanCalendarController(
-            maxDate: DateTime.now().add(const Duration(days: 155)),
+            maxDate: DateTime(DateTime.now().year, DateTime.now().month + 6,
+                DateTime.now().day),
             minDate: DateTime(2023),
             initialFocusDate: start,
             initialDateSelected: start,

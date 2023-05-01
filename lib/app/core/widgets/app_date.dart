@@ -1,13 +1,18 @@
 import 'package:crud_agendamento/app/core/utils/formatters.dart';
+import 'package:crud_agendamento/app/core/widgets/app_button.dart';
 import 'package:flutter/material.dart';
+import 'package:scrollable_clean_calendar/controllers/clean_calendar_controller.dart';
+import 'package:scrollable_clean_calendar/scrollable_clean_calendar.dart';
+import 'package:get/get.dart';
+import 'package:scrollable_clean_calendar/utils/enums.dart';
 
 class AppDate extends StatefulWidget {
   final String label;
   final DateTime? initial;
-  final void Function(DateTime) confirm;
+  final void Function(DateTime) callback;
   const AppDate({
     super.key,
-    required this.confirm,
+    required this.callback,
     this.label = "",
     this.initial,
   });
@@ -34,19 +39,62 @@ class _AppDateState extends State<AppDate> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime date = widget.initial ?? now;
     return GestureDetector(
       onTap: () async {
-        final res = await showDatePicker(
-            context: context,
-            cancelText: "Cancelar",
-            helpText: "Selecione a data",
-            firstDate: now,
-            initialDate: time.value ?? now,
-            lastDate: DateTime(now.year, now.month + 3, now.day));
-        if (res != null) {
-          time.value = res;
-          widget.confirm(res);
-        }
+        final calendar = CleanCalendarController(
+            maxDate: DateTime(DateTime.now().year, DateTime.now().month + 6,
+                DateTime.now().day),
+            minDate: DateTime(2023),
+            initialFocusDate: date,
+            initialDateSelected: date,
+            weekdayStart: DateTime.sunday,
+            rangeMode: false,
+            onDayTapped: (a) {
+              date = a;
+            });
+
+        await Get.dialog(Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ConstrainedBox(
+                  constraints:
+                      const BoxConstraints(maxHeight: 450, maxWidth: 400),
+                  child: ScrollableCleanCalendar(
+                    calendarController: calendar,
+                    locale: 'pt',
+                    weekdayTextStyle: context.textTheme.labelSmall,
+                    layout: Layout.BEAUTY,
+                    calendarCrossAxisSpacing: 0,
+                    dayRadius: 100,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 20,
+                  children: [
+                    AppButton(
+                      label: "Cancelar",
+                      onPressed: Get.back,
+                    ),
+                    AppButton(
+                      label: "Filtrar",
+                      onPressed: () {
+                        time.value = date;
+                        widget.callback.call(date);
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ));
+        calendar.dispose();
       },
       child: Container(
         height: 53,
