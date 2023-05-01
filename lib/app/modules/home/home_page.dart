@@ -1,9 +1,11 @@
 import 'package:crud_agendamento/app/core/utils/formatters.dart';
+import 'package:crud_agendamento/app/core/widgets/app_date_range.dart';
 import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_delete_dialog.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_form_dialog.dart';
+import 'package:crud_agendamento/app/modules/home/widgets/card_filter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_row/responsive_row.dart';
@@ -14,6 +16,23 @@ class HomePage extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Agendamentos",
+          ),
+          centerTitle: true,
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: AppDateRange(
+                  datesRange: controller.selectedDateRange.value,
+                  callback: (datesRange) {
+                    Get.back();
+                    controller.selectedDateRange.value = datesRange;
+                  },
+                )),
+          ],
+        ),
         floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () async {
@@ -24,45 +43,54 @@ class HomePage extends GetView<HomeController> {
               );
             }),
         body: Obx(
-          () => ListView.builder(
-            itemCount: controller.appointments.length + 1,
-            itemBuilder: (context, index) {
-              if (index == controller.appointments.length) {
-                return const SizedBox(height: 75);
-              }
-              final appointment = controller.appointments[index];
-              return ResponsiveCol(
-                child: Card(
-                  child: ListTile(
-                    title: ResponsiveRow(
-                      alignment: WrapAlignment.spaceBetween,
-                      children: [
-                        itemCard(
-                            icon: Icons.person,
-                            text: appointment.name,
-                            sizes: Sizes.col3),
-                        itemCard(
-                            icon: Icons.calendar_month,
-                            text: Formatters.dateDisplay(appointment.date)),
-                        itemCard(
-                            icon: Icons.timer,
-                            text: Formatters.hourDisplay(appointment.date),
-                            sizes: Sizes.col1),
-                        itemCard(
-                            icon: Icons.phone,
-                            text: appointment.fone ?? '',
-                            visible: appointment.fone != null,
-                            sizes: Sizes.col3),
-                        actionsCard(
-                          context: context,
-                          appointment: appointment,
+          () => Column(
+            children: [
+              listFilters(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: controller.appointments.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == controller.appointments.length) {
+                      return const SizedBox(height: 75);
+                    }
+                    final appointment = controller.appointments[index];
+                    return ResponsiveCol(
+                      child: Card(
+                        child: ListTile(
+                          title: ResponsiveRow(
+                            alignment: WrapAlignment.spaceBetween,
+                            children: [
+                              itemCard(
+                                  icon: Icons.person,
+                                  text: appointment.name,
+                                  sizes: Sizes.col3),
+                              itemCard(
+                                  icon: Icons.calendar_month,
+                                  text:
+                                      Formatters.dateDisplay(appointment.date)),
+                              itemCard(
+                                  icon: Icons.timer,
+                                  text:
+                                      Formatters.hourDisplay(appointment.date),
+                                  sizes: Sizes.col1),
+                              itemCard(
+                                  icon: Icons.phone,
+                                  text: appointment.fone ?? '',
+                                  visible: appointment.fone != null,
+                                  sizes: Sizes.col3),
+                              actionsCard(
+                                context: context,
+                                appointment: appointment,
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ));
   }
@@ -149,5 +177,21 @@ class HomePage extends GetView<HomeController> {
             appointmentEdit: appointmentEdit,
           );
         });
+  }
+
+  Widget listFilters() {
+    final start =
+        Formatters.dateDisplay(controller.selectedDateRange.value.start);
+    final end = Formatters.dateDisplay(controller.selectedDateRange.value.end);
+
+    return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        height: 60,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            CardFilter(child: Text("$start - $end"), action: () {}),
+          ],
+        ));
   }
 }

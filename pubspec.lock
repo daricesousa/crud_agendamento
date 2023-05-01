@@ -70,6 +70,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -87,10 +92,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.17.0"
   js:
     dependency: transitive
     description:
@@ -155,6 +160,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  scrollable_clean_calendar:
+    dependency: "direct main"
+    description:
+      name: scrollable_clean_calendar
+      sha256: a31cfd0e0d0417e7b4e6bfa0a2365ff937d4e023fb693e352307d7d432e8f820
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
+  scrollable_positioned_list:
+    dependency: transitive
+    description:
+      name: scrollable_positioned_list
+      sha256: "45806e0d64aa9dcbf4ced336eabff766dd7ba734014fd71c89bc08241c02bfc5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.6"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -218,4 +239,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=2.19.5 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.12.0"
