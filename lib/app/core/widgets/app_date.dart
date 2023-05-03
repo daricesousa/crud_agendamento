@@ -22,36 +22,37 @@ class AppDate extends StatefulWidget {
 }
 
 class _AppDateState extends State<AppDate> {
-  final time = ValueNotifier<DateTime?>(null);
+  final dateConfirmed = ValueNotifier<DateTime?>(null);
   final now = DateTime.now();
+  late DateTime dateSelected;
 
   @override
   void dispose() {
-    time.dispose();
+    dateConfirmed.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
-    time.value = widget.initial;
+    dateConfirmed.value = widget.initial;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = widget.initial ?? now;
     return GestureDetector(
       onTap: () async {
+        dateSelected = widget.initial ?? now;
         final calendar = CleanCalendarController(
             maxDate: DateTime(DateTime.now().year, DateTime.now().month + 6,
                 DateTime.now().day),
             minDate: DateTime(2023),
-            initialFocusDate: date,
-            initialDateSelected: date,
+            initialFocusDate: dateSelected,
+            initialDateSelected: dateSelected,
             weekdayStart: DateTime.sunday,
             rangeMode: false,
             onDayTapped: (a) {
-              date = a;
+              dateSelected = a;
             });
 
         await Get.dialog(Dialog(
@@ -83,8 +84,8 @@ class _AppDateState extends State<AppDate> {
                     AppButton(
                       label: "Filtrar",
                       onPressed: () {
-                        time.value = date;
-                        widget.callback.call(date);
+                        dateConfirmed.value = dateSelected;
+                        widget.callback.call(dateSelected);
                       },
                     ),
                   ],
@@ -104,11 +105,11 @@ class _AppDateState extends State<AppDate> {
         ),
         child: Center(
           child: AnimatedBuilder(
-            animation: time,
+            animation: dateConfirmed,
             builder: (context, snapshot) {
               return Visibility(
-                visible: time.value == null,
-                replacement: Text(Formatters.dateDisplay(time.value)),
+                visible: dateConfirmed.value == null,
+                replacement: Text(Formatters.dateDisplay(dateConfirmed.value)),
                 child: Text(widget.label),
               );
             },

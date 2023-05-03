@@ -24,13 +24,13 @@ class HomePage extends GetView<HomeController> {
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 20),
-                child: AppDateRange(
-                  datesRange: controller.selectedDateRange.value,
-                  callback: (datesRange) {
-                    Get.back();
-                    controller.selectedDateRange.value = datesRange;
-                  },
-                )),
+                child: Obx(() => AppDateRange(
+                      datesRange: controller.selectedDateRange.value,
+                      callback: (datesRange) {
+                        controller.selectedDateRange.value = datesRange;
+                        Get.back();
+                      },
+                    ))),
           ],
         ),
         floatingActionButton: FloatingActionButton(

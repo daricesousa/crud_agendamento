@@ -60,7 +60,7 @@ class HomeController extends GetxController {
   Future<void> addAppointment(AppointmentModel appointment) async {
     try {
       final result = await _repository.postAppointment(appointment);
-      appointments.add(result);
+      _appointments.add(result);
       Get.back();
       AppSnackBar.success(message: 'Agendamento realizado');
     } catch (e) {
@@ -71,8 +71,8 @@ class HomeController extends GetxController {
   Future<void> editAppointment(AppointmentModel appointment) async {
     try {
       final index =
-          appointments.indexWhere((element) => element.id == appointment.id);
-      appointments[index] = await _repository.putAppointment(appointment);
+          _appointments.indexWhere((element) => element.id == appointment.id);
+      _appointments[index] = await _repository.putAppointment(appointment);
       Get.back();
       AppSnackBar.success(message: 'Agendamento atualizado');
     } catch (e) {

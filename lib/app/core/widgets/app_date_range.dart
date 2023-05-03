@@ -20,13 +20,16 @@ class AppDateRange extends StatefulWidget {
 }
 
 class _AppDateRangeState extends State<AppDateRange> {
+  late DateTime start;
+  late DateTime end;
+
   @override
   Widget build(BuildContext context) {
-    DateTime start = widget.datesRange.start;
-    DateTime end = widget.datesRange.end;
     return IconButton(
       icon: const Icon(Icons.calendar_month),
       onPressed: () async {
+        start = widget.datesRange.start;
+        end = widget.datesRange.end;
         final calendar = CleanCalendarController(
             maxDate: DateTime(DateTime.now().year, DateTime.now().month + 6,
                 DateTime.now().day),
@@ -40,49 +43,51 @@ class _AppDateRangeState extends State<AppDateRange> {
               end = b ?? a;
             });
 
-        await Get.dialog(Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxHeight: 450, maxWidth: 400),
-                  child: ScrollableCleanCalendar(
-                    calendarController: calendar,
-                    locale: 'pt',
-                    weekdayTextStyle: context.textTheme.labelSmall,
-                    layout: Layout.BEAUTY,
-                    calendarCrossAxisSpacing: 0,
-                    dayRadius: 100,
+        await Get.dialog(
+          Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ConstrainedBox(
+                    constraints:
+                        const BoxConstraints(maxHeight: 450, maxWidth: 400),
+                    child: ScrollableCleanCalendar(
+                      calendarController: calendar,
+                      locale: 'pt',
+                      weekdayTextStyle: context.textTheme.labelSmall,
+                      layout: Layout.BEAUTY,
+                      calendarCrossAxisSpacing: 0,
+                      dayRadius: 100,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 20,
-                  children: [
-                    AppButton(
-                      label: "Cancelar",
-                      onPressed: Get.back,
-                    ),
-                    AppButton(
-                      label: "Filtrar",
-                      onPressed: () {
-                        final dateRange = DateTimeRange(
-                          start: start,
-                          end: end,
-                        );
-                        widget.callback.call(dateRange);
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 20,
+                    children: [
+                      AppButton(
+                        label: "Cancelar",
+                        onPressed: Get.back,
+                      ),
+                      AppButton(
+                        label: "Filtrar",
+                        onPressed: () {
+                          final dateRange = DateTimeRange(
+                            start: start,
+                            end: end,
+                          );
+                          widget.callback.call(dateRange);
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
-        ));
+        );
         calendar.dispose();
       },
     );

@@ -102,7 +102,9 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                       initial: editDate,
                       callback: (date) {
                         Get.back();
-                        editDate = date;
+                        setState(() {
+                          editDate = date;
+                        });
                       },
                     ),
                   ),
