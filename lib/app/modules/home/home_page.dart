@@ -1,4 +1,7 @@
+import 'package:crud_agendamento/app/core/utils/filter_date.dart';
+import 'package:crud_agendamento/app/core/utils/filter_status.dart';
 import 'package:crud_agendamento/app/core/utils/formatters.dart';
+import 'package:crud_agendamento/app/core/widgets/app_chip.dart';
 import 'package:crud_agendamento/app/core/widgets/app_date_range.dart';
 import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
@@ -17,20 +20,25 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Agendamentos",
-          ),
+          title: const Text("Agenda"),
           centerTitle: true,
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 20),
-                child: Obx(() => AppDateRange(
-                      datesRange: controller.selectedDateRange.value,
-                      callback: (datesRange) {
-                        controller.selectedDateRange.value = datesRange;
-                        Get.back();
-                      },
-                    ))),
+                child: IconButton(
+                    icon: const Icon(Icons.calendar_month),
+                    onPressed: () {
+                      Get.dialog(Obx(() => AppDateRange(
+                            datesRange: controller.selectedDateRange.value,
+                            callback: (datesRange) {
+                              controller.dateFilterSelected.value = null;
+                              controller.updateSelectedDateRange(datesRange);
+                              controller.statusFilterSelected.assignAll(
+                                  [FilterStatus.past, FilterStatus.upcoming]);
+                              Get.back();
+                            },
+                          )));
+                    })),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -44,15 +52,54 @@ class HomePage extends GetView<HomeController> {
             }),
         body: Obx(
           () => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              listFilters(),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 40,
+                children: [
+                  AppChip<FilterDate>(
+                    callback: (selectees) {
+                      controller.dateFilterSelected.value = selectees.first;
+                      controller.updateSelectedDateRange(selectees.first.range);
+                    },
+                    multiple: false,
+                    allowEmpty: false,
+                    values: FilterDate.values
+                        .map((e) => AppChipItem(label: e.name, value: e))
+                        .toList(),
+                    initial: controller.dateFilterSelected.value == null
+                        ? []
+                        : [controller.dateFilterSelected.value!],
+                  ),
+                  AppChip<FilterStatus>(
+                    allowEmpty: false,
+                    multiple: true,
+                    callback: (e) {
+                      controller.statusFilterSelected.assignAll(e);
+                    },
+                    values: FilterStatus.values
+                        .map((e) => AppChipItem(label: e.name, value: e))
+                        .toList(),
+                    initial: controller.statusFilterSelected,
+                  ),
+                  AppChip<void>(
+                    allowEmpty: false,
+                    multiple: false,
+                    callback: (e) {},
+                    values: [
+                      AppChipItem(
+                          label: controller.selectedDateRangeDisplay,
+                          value: null)
+                    ],
+                    initial: const [null],
+                  ),
+                ],
+              ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: controller.appointments.length + 1,
+                  itemCount: controller.appointments.length,
                   itemBuilder: (context, index) {
-                    if (index == controller.appointments.length) {
-                      return const SizedBox(height: 75);
-                    }
                     final appointment = controller.appointments[index];
                     return ResponsiveCol(
                       child: Card(

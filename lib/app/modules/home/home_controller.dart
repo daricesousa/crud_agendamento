@@ -1,3 +1,6 @@
+import 'package:crud_agendamento/app/core/utils/filter_date.dart';
+import 'package:crud_agendamento/app/core/utils/filter_status.dart';
+import 'package:crud_agendamento/app/core/utils/formatters.dart';
 import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/repositories/appointment_repository.dart';
@@ -9,6 +12,9 @@ class HomeController extends GetxController {
   final _appointments = <AppointmentModel>[].obs;
   late final selectedDateRange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now()).obs;
+  String selectedDateRangeDisplay = '';
+  final dateFilterSelected = Rx<FilterDate?>(FilterDate.thisMonth);
+  final statusFilterSelected = <FilterStatus>[FilterStatus.upcoming].obs;
 
   HomeController({
     required AppointmentRepository repository,
@@ -16,7 +22,8 @@ class HomeController extends GetxController {
 
   List<AppointmentModel> get appointments {
     List<AppointmentModel> newAppointments = List.from(_appointments);
-    newAppointments = _filterDateRange();
+    newAppointments = _filterByDateRange();
+    newAppointments = _filterByStatus(newAppointments);
     newAppointments.sort((a, b) {
       return a.date.compareTo(b.date);
     });
@@ -25,17 +32,13 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    _initialSelectedDateRange();
+    getAppointments();
+    _initializeSelectedDateRange();
+    updateSelectedDateRange(selectedDateRange.value);
     super.onInit();
   }
 
-  @override
-  onReady() {
-    getAppointments();
-    super.onReady();
-  }
-
-  void _initialSelectedDateRange() {
+  void _initializeSelectedDateRange() {
     final start =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final end = DateTime(DateTime.now().year, DateTime.now().month + 1)
@@ -43,12 +46,27 @@ class HomeController extends GetxController {
     selectedDateRange.value = DateTimeRange(start: start, end: end);
   }
 
-  List<AppointmentModel> _filterDateRange() {
+  void updateSelectedDateRange(DateTimeRange range) {
+    selectedDateRange.value = range;
+    final start = Formatters.dateDisplay(selectedDateRange.value.start);
+    final end = Formatters.dateDisplay(selectedDateRange.value.end);
+    selectedDateRangeDisplay = "$start - $end";
+  }
+
+  List<AppointmentModel> _filterByDateRange() {
     final start = DateTime(selectedDateRange.value.start.year,
         selectedDateRange.value.start.month, selectedDateRange.value.start.day);
-    final end = selectedDateRange.value.end.add(const Duration(days: 1));
+    final end = DateTime(selectedDateRange.value.end.year,
+            selectedDateRange.value.end.month, selectedDateRange.value.end.day)
+        .add(const Duration(days: 1));
     return _appointments.where((e) {
       return e.date.isAfter(start) && (e.date.isBefore(end));
+    }).toList();
+  }
+
+  List<AppointmentModel> _filterByStatus(List<AppointmentModel> appointments) {
+    return appointments.where((a) {
+      return statusFilterSelected.any((status) => status.isDateInRange(a.date));
     }).toList();
   }
 
@@ -83,7 +101,7 @@ class HomeController extends GetxController {
   Future<void> deleteAppointment(AppointmentModel appointment) async {
     try {
       await _repository.deleteAppointment(appointment);
-      appointments.remove(appointment);
+      _appointments.remove(appointment);
       Get.back();
       AppSnackBar.success(message: 'Agendamento deletado');
     } catch (e) {

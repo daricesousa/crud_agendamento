@@ -82,7 +82,7 @@ class _AppDateState extends State<AppDate> {
                       onPressed: Get.back,
                     ),
                     AppButton(
-                      label: "Filtrar",
+                      label: "Ok",
                       onPressed: () {
                         dateConfirmed.value = dateSelected;
                         widget.callback.call(dateSelected);
