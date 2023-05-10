@@ -43,11 +43,11 @@ class CardAppointment extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(
-                      icon: Icon(Icons.edit,
-                          color: context.theme.primaryColor.withAlpha(100)),
-                      onPressed: edit),
-                  const SizedBox(width: 8),
+                  if (!appointment.date.isBefore(DateTime.now()))
+                    IconButton(
+                        icon: Icon(Icons.edit,
+                            color: context.theme.primaryColor.withAlpha(100)),
+                        onPressed: edit),
                   IconButton(
                       icon: Icon(Icons.delete,
                           color: context.theme.primaryColor.withAlpha(100)),
