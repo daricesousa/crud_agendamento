@@ -1,6 +1,6 @@
-import 'package:crud_agendamento/app/core/utils/formatters.dart';
 import 'package:crud_agendamento/app/core/widgets/app_button.dart';
 import 'package:crud_agendamento/app/models/appointment_model.dart';
+import 'package:crud_agendamento/app/modules/home/widgets/card_appointment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -37,30 +37,7 @@ class _AppointmentDeleteDialogState extends State<AppointmentDeleteDialog> {
               const SizedBox(height: 20),
               const Text("Tem certeza que deseja deletar esse agendamento?"),
               const SizedBox(height: 10),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 20),
-                  const Icon(Icons.person),
-                  Text(appointment.name),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 20),
-                  const Icon(Icons.calendar_month),
-                  Text(Formatters.dateDisplay(appointment.date)),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 20),
-                  const Icon(Icons.timer),
-                  Text(Formatters.hourDisplay(appointment.date)),
-                ],
-              ),
+              CardAppointment(appointment: appointment, actions: false),
               const SizedBox(height: 20),
               Wrap(
                 alignment: WrapAlignment.spaceBetween,

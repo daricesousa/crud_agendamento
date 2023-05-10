@@ -1,6 +1,5 @@
 import 'package:crud_agendamento/app/core/utils/filter_date.dart';
 import 'package:crud_agendamento/app/core/utils/filter_status.dart';
-import 'package:crud_agendamento/app/core/utils/formatters.dart';
 import 'package:crud_agendamento/app/core/widgets/app_chip.dart';
 import 'package:crud_agendamento/app/core/widgets/app_date_range.dart';
 import 'package:crud_agendamento/app/core/widgets/app_snack_bar.dart';
@@ -8,9 +7,9 @@ import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_delete_dialog.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_form_dialog.dart';
+import 'package:crud_agendamento/app/modules/home/widgets/card_appointment.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_row/responsive_row.dart';
 
 import '../../core/widgets/app_form_field.dart';
 
@@ -150,116 +149,53 @@ class HomePage extends GetView<HomeController> {
                       const Text('Sem registros'),
                     ])),
               if (controller.appointments.isNotEmpty)
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.appointments.length,
-                    itemBuilder: (context, index) {
-                      final appointment = controller.appointments[index];
-                      return ResponsiveCol(
-                        child: Card(
-                          child: ListTile(
-                            title: ResponsiveRow(
-                              alignment: WrapAlignment.spaceBetween,
-                              children: [
-                                itemCard(
-                                    icon: Icons.person,
-                                    text: appointment.name,
-                                    sizes: Sizes.col3),
-                                itemCard(
-                                    icon: Icons.calendar_month,
-                                    text: Formatters.dateDisplay(
-                                        appointment.date)),
-                                itemCard(
-                                    icon: Icons.timer,
-                                    text: Formatters.hourDisplay(
-                                        appointment.date),
-                                    sizes: Sizes.col1),
-                                itemCard(
-                                    icon: Icons.phone,
-                                    text: appointment.fone ?? '',
-                                    visible: appointment.fone != null,
-                                    sizes: Sizes.col3),
-                                actionsCard(
+                Expanded(child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: controller.appointments.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: constraints.maxWidth ~/ 290,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        mainAxisExtent: 105,
+                      ),
+                      itemBuilder: (context, index) {
+                        final appointment = controller.appointments[index];
+                        return CardAppointment(
+                            appointment: appointment,
+                            edit: () {
+                              if (appointment.date.isBefore(DateTime.now())) {
+                                AppSnackBar.error(
+                                    message:
+                                        "Não é possível editar um agendamento que já passou");
+                              } else {
+                                openDialog(
                                   context: context,
-                                  appointment: appointment,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                                  callback: controller.editAppointment,
+                                  appointmentEdit: appointment,
+                                  title: "Editar agendamento",
+                                );
+                              }
+                            },
+                            delete: () {
+                              showDialog<AppointmentModel>(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (context) {
+                                    return AppointmentDeleteDialog(
+                                      appointment: appointment,
+                                      callback: () => controller
+                                          .deleteAppointment(appointment),
+                                    );
+                                  });
+                            });
+                      },
+                    );
+                  },
+                )),
             ],
           ),
-        ));
-  }
-
-  ResponsiveCol itemCard(
-      {IconData? icon,
-      String text = '',
-      bool visible = true,
-      Sizes sizes = Sizes.col2}) {
-    return ResponsiveCol(
-      lg: sizes,
-      md: sizes,
-      sm: Sizes.col12,
-      child: Visibility(
-        visible: visible,
-        child: Row(
-          children: [
-            Icon(icon),
-            Text(text),
-          ],
-        ),
-      ),
-    );
-  }
-
-  ResponsiveCol actionsCard(
-      {required BuildContext context, required AppointmentModel appointment}) {
-    return ResponsiveCol(
-        lg: Sizes.col2,
-        md: Sizes.col2,
-        sm: Sizes.col12,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Visibility(
-              visible: appointment.date.isAfter(DateTime.now()),
-              child: IconButton(
-                  onPressed: () {
-                    if (appointment.date.isBefore(DateTime.now())) {
-                      AppSnackBar.error(
-                          message:
-                              "Não é possível editar um agendamento que já passou");
-                    } else {
-                      openDialog(
-                        context: context,
-                        callback: controller.editAppointment,
-                        appointmentEdit: appointment,
-                        title: "Editar agendamento",
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.edit_document)),
-            ),
-            IconButton(
-                onPressed: () async {
-                  await showDialog<AppointmentModel>(
-                      context: context,
-                      builder: (context) {
-                        return AppointmentDeleteDialog(
-                          appointment: appointment,
-                          callback: () async {
-                            await controller.deleteAppointment(appointment);
-                          },
-                        );
-                      });
-                },
-                icon: const Icon(Icons.delete)),
-          ],
         ));
   }
 
