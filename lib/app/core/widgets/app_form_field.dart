@@ -8,6 +8,9 @@ class AppFormField extends StatelessWidget {
   final TextInputType? textInputType;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
+  final Widget? suffixIcon;
+  final Function(String)? onChanged;
+  final String? hintText;
 
   const AppFormField({
     Key? key,
@@ -17,6 +20,9 @@ class AppFormField extends StatelessWidget {
     this.textInputType,
     this.inputFormatters,
     this.validator,
+    this.suffixIcon,
+    this.onChanged,
+    this.hintText,
   }) : super(key: key);
 
   @override
@@ -29,7 +35,10 @@ class AppFormField extends StatelessWidget {
         textInputAction: TextInputAction.next,
         inputFormatters: inputFormatters,
         validator: validator,
+        onChanged: onChanged,
         decoration: InputDecoration(
+          hintText: hintText,
+          suffixIcon: suffixIcon,
           label: Text(label),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ));

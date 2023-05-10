@@ -13,6 +13,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_row/responsive_row.dart';
 
+import '../../core/widgets/app_form_field.dart';
+
 class HomePage extends GetView<HomeController> {
   const HomePage({Key? key}) : super(key: key);
 
@@ -24,22 +26,57 @@ class HomePage extends GetView<HomeController> {
           centerTitle: true,
           backgroundColor: context.theme.primaryColor.withAlpha(50),
           actions: [
-            Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: IconButton(
-                    icon: const Icon(Icons.calendar_month),
-                    onPressed: () {
-                      Get.dialog(Obx(() => AppDateRange(
-                            datesRange: controller.selectedDateRange.value,
-                            callback: (datesRange) {
-                              controller.dateFilterSelected.value = null;
-                              controller.updateSelectedDateRange(datesRange);
-                              controller.statusFilterSelected.assignAll(
-                                  [FilterStatus.past, FilterStatus.upcoming]);
-                              Get.back();
+            Row(
+              children: [
+                Obx(
+                  () => Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Visibility(
+                      visible: !controller.showTextFilterField.value,
+                      replacement: SizedBox(
+                        width: 250.0,
+                        height: 45,
+                        child: AppFormField(
+                          hintText: "Pesquisar",
+                          onChanged: (v) => controller.textFilter.value = v,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.close, size: 10),
+                            onPressed: () {
+                              controller.textFilter.value = '';
+                              controller.showTextFilterField.value = false;
                             },
-                          )));
-                    })),
+                          ),
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () =>
+                            controller.showTextFilterField.value = true,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: IconButton(
+                        icon: const Icon(Icons.calendar_month),
+                        onPressed: () {
+                          Get.dialog(Obx(() => AppDateRange(
+                                datesRange: controller.selectedDateRange.value,
+                                callback: (datesRange) {
+                                  controller.dateFilterSelected.value = null;
+                                  controller
+                                      .updateSelectedDateRange(datesRange);
+                                  controller.statusFilterSelected.assignAll([
+                                    FilterStatus.past,
+                                    FilterStatus.upcoming
+                                  ]);
+                                  Get.back();
+                                },
+                              )));
+                        })),
+              ],
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

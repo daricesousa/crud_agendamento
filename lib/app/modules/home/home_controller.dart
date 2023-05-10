@@ -15,6 +15,8 @@ class HomeController extends GetxController {
   String selectedDateRangeDisplay = '';
   final dateFilterSelected = Rx<FilterDate?>(FilterDate.thisMonth);
   final statusFilterSelected = <FilterStatus>[FilterStatus.upcoming].obs;
+  final textFilter = ''.obs;
+  final showTextFilterField = false.obs;
 
   HomeController({
     required AppointmentRepository repository,
@@ -22,8 +24,11 @@ class HomeController extends GetxController {
 
   List<AppointmentModel> get appointments {
     List<AppointmentModel> newAppointments = List.from(_appointments);
-    newAppointments = _filterByDateRange();
+    newAppointments = newAppointments = _filterByDateRange(_appointments);
     newAppointments = _filterByStatus(newAppointments);
+    newAppointments = newAppointments.where((e) {
+      return e.name.toLowerCase().contains(textFilter.value.toLowerCase());
+    }).toList();
     newAppointments.sort((a, b) {
       return a.date.compareTo(b.date);
     });
@@ -53,13 +58,14 @@ class HomeController extends GetxController {
     selectedDateRangeDisplay = "$start - $end";
   }
 
-  List<AppointmentModel> _filterByDateRange() {
+  List<AppointmentModel> _filterByDateRange(
+      List<AppointmentModel> appointments) {
     final start = DateTime(selectedDateRange.value.start.year,
         selectedDateRange.value.start.month, selectedDateRange.value.start.day);
     final end = DateTime(selectedDateRange.value.end.year,
             selectedDateRange.value.end.month, selectedDateRange.value.end.day)
         .add(const Duration(days: 1));
-    return _appointments.where((e) {
+    return appointments.where((e) {
       return e.date.isAfter(start) && (e.date.isBefore(end));
     }).toList();
   }
