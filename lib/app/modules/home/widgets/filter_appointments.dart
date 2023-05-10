@@ -1,6 +1,7 @@
 import 'package:crud_agendamento/app/core/utils/filter_date.dart';
 import 'package:crud_agendamento/app/core/utils/filter_status.dart';
 import 'package:crud_agendamento/app/core/widgets/app_chip.dart';
+import 'package:crud_agendamento/app/core/widgets/app_date_range.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,10 +42,18 @@ class FilterAppointments extends StatelessWidget {
               .toList(),
           initial: controller.statusFilterSelected,
         ),
-        AppChip<void>(
+        AppChip(
           allowEmpty: false,
           multiple: false,
-          callback: (e) {},
+          callback: (e) {
+            Get.dialog(Obx(() => AppDateRange(
+                  datesRange: controller.selectedDateRange.value,
+                  callback: (datesRange) {
+                    controller.selectRangeByCalendar(datesRange);
+                    Get.back();
+                  },
+                )));
+          },
           values: [
             AppChipItem(label: controller.selectedDateRangeDisplay, value: null)
           ],

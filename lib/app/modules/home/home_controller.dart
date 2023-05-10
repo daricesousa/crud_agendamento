@@ -52,6 +52,12 @@ class HomeController extends GetxController {
     selectedDateRange.value = DateTimeRange(start: start, end: end);
   }
 
+  void selectRangeByCalendar(DateTimeRange range) {
+    dateFilterSelected.value = null;
+    statusFilterSelected.assignAll([FilterStatus.past, FilterStatus.upcoming]);
+    updateSelectedDateRange(range);
+  }
+
   void updateSelectedDateRange(DateTimeRange range) {
     selectedDateRange.value = range;
     final start = Formatters.dateDisplay(selectedDateRange.value.start);

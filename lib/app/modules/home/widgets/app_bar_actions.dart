@@ -1,4 +1,3 @@
-import 'package:crud_agendamento/app/core/utils/filter_status.dart';
 import 'package:crud_agendamento/app/core/widgets/app_date_range.dart';
 import 'package:crud_agendamento/app/core/widgets/app_form_field.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
@@ -51,10 +50,7 @@ class AppBarActions extends StatelessWidget {
                   Get.dialog(Obx(() => AppDateRange(
                         datesRange: controller.selectedDateRange.value,
                         callback: (datesRange) {
-                          controller.dateFilterSelected.value = null;
-                          controller.updateSelectedDateRange(datesRange);
-                          controller.statusFilterSelected.assignAll(
-                              [FilterStatus.past, FilterStatus.upcoming]);
+                          controller.selectRangeByCalendar(datesRange);
                           Get.back();
                         },
                       )));
