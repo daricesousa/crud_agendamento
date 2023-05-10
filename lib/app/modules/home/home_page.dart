@@ -8,7 +8,6 @@ import 'package:crud_agendamento/app/models/appointment_model.dart';
 import 'package:crud_agendamento/app/modules/home/home_controller.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_delete_dialog.dart';
 import 'package:crud_agendamento/app/modules/home/widgets/appointment_form_dialog.dart';
-import 'package:crud_agendamento/app/modules/home/widgets/card_filter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_row/responsive_row.dart';
@@ -134,47 +133,64 @@ class HomePage extends GetView<HomeController> {
                   ),
                 ],
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: controller.appointments.length,
-                  itemBuilder: (context, index) {
-                    final appointment = controller.appointments[index];
-                    return ResponsiveCol(
-                      child: Card(
-                        child: ListTile(
-                          title: ResponsiveRow(
-                            alignment: WrapAlignment.spaceBetween,
-                            children: [
-                              itemCard(
-                                  icon: Icons.person,
-                                  text: appointment.name,
-                                  sizes: Sizes.col3),
-                              itemCard(
-                                  icon: Icons.calendar_month,
-                                  text:
-                                      Formatters.dateDisplay(appointment.date)),
-                              itemCard(
-                                  icon: Icons.timer,
-                                  text:
-                                      Formatters.hourDisplay(appointment.date),
-                                  sizes: Sizes.col1),
-                              itemCard(
-                                  icon: Icons.phone,
-                                  text: appointment.fone ?? '',
-                                  visible: appointment.fone != null,
-                                  sizes: Sizes.col3),
-                              actionsCard(
-                                context: context,
-                                appointment: appointment,
-                              ),
-                            ],
+              if (controller.loading.value)
+                const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              if (controller.appointments.isEmpty && !controller.loading.value)
+                Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      Icon(
+                        Icons.note,
+                        size: 50,
+                        color: context.theme.primaryColor,
+                      ),
+                      const Text('Sem registros'),
+                    ])),
+              if (controller.appointments.isNotEmpty)
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: controller.appointments.length,
+                    itemBuilder: (context, index) {
+                      final appointment = controller.appointments[index];
+                      return ResponsiveCol(
+                        child: Card(
+                          child: ListTile(
+                            title: ResponsiveRow(
+                              alignment: WrapAlignment.spaceBetween,
+                              children: [
+                                itemCard(
+                                    icon: Icons.person,
+                                    text: appointment.name,
+                                    sizes: Sizes.col3),
+                                itemCard(
+                                    icon: Icons.calendar_month,
+                                    text: Formatters.dateDisplay(
+                                        appointment.date)),
+                                itemCard(
+                                    icon: Icons.timer,
+                                    text: Formatters.hourDisplay(
+                                        appointment.date),
+                                    sizes: Sizes.col1),
+                                itemCard(
+                                    icon: Icons.phone,
+                                    text: appointment.fone ?? '',
+                                    visible: appointment.fone != null,
+                                    sizes: Sizes.col3),
+                                actionsCard(
+                                  context: context,
+                                  appointment: appointment,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ));
@@ -262,21 +278,5 @@ class HomePage extends GetView<HomeController> {
             appointmentEdit: appointmentEdit,
           );
         });
-  }
-
-  Widget listFilters() {
-    final start =
-        Formatters.dateDisplay(controller.selectedDateRange.value.start);
-    final end = Formatters.dateDisplay(controller.selectedDateRange.value.end);
-
-    return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        height: 60,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            CardFilter(child: Text("$start - $end"), action: () {}),
-          ],
-        ));
   }
 }

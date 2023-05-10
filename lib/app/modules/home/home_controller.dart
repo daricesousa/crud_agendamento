@@ -17,6 +17,7 @@ class HomeController extends GetxController {
   final statusFilterSelected = <FilterStatus>[FilterStatus.upcoming].obs;
   final textFilter = ''.obs;
   final showTextFilterField = false.obs;
+  final loading = false.obs;
 
   HomeController({
     required AppointmentRepository repository,
@@ -77,8 +78,10 @@ class HomeController extends GetxController {
   }
 
   Future<void> getAppointments() async {
+    loading.value = true;
     final result = await _repository.getAppointments();
     _appointments.value = result;
+    loading.value = false;
   }
 
   Future<void> addAppointment(AppointmentModel appointment) async {
