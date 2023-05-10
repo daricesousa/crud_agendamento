@@ -1,5 +1,6 @@
 import 'package:crud_agendamento/app/app_pages.dart';
 import 'package:crud_agendamento/app/core/bindings/app_bindings.dart';
+import 'package:crud_agendamento/app/core/ui/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       locale: const Locale('pt', 'BR'),
+      theme: AppTheme.theme,
     );
   }
 }

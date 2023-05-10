@@ -22,6 +22,7 @@ class HomePage extends GetView<HomeController> {
         appBar: AppBar(
           title: const Text("Agenda"),
           centerTitle: true,
+          backgroundColor: context.theme.primaryColor.withAlpha(50),
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 20),
