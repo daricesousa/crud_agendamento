@@ -2,5 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   AppTheme._();
-  static final theme = ThemeData(useMaterial3: true);
+  static final theme = ThemeData(
+    useMaterial3: true,
+    fontFamily: 'comfortaa',
+  );
 }
