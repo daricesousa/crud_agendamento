@@ -39,6 +39,12 @@ class _AppDateState extends State<AppDate> {
   }
 
   @override
+  void didUpdateWidget(covariant AppDate oldWidget) {
+    dateConfirmed.value = widget.initial;
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
@@ -46,7 +52,7 @@ class _AppDateState extends State<AppDate> {
         final calendar = CleanCalendarController(
             maxDate: DateTime(DateTime.now().year, DateTime.now().month + 6,
                 DateTime.now().day),
-            minDate: DateTime(2023),
+            minDate: DateTime.now(),
             initialFocusDate: dateSelected,
             initialDateSelected: dateSelected,
             weekdayStart: DateTime.sunday,

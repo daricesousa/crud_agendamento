@@ -30,6 +30,12 @@ class _AppTimeState extends State<AppTime> {
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(covariant AppTime oldWidget) {
+    time.value = widget.initial;
+    super.didUpdateWidget(oldWidget);
+  }
+
   String showTimer() {
     final hour = "${time.value?.hour}".padLeft(2, "0");
     final minute = "${time.value?.minute}".padLeft(2, "0");

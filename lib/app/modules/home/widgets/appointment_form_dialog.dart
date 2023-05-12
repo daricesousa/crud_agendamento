@@ -11,6 +11,7 @@ class AppointmentFormDialog extends StatefulWidget {
   final String title;
   final AppointmentModel? appointmentEdit;
   final Future<void> Function(AppointmentModel) callback;
+
   const AppointmentFormDialog({
     super.key,
     this.title = '',
@@ -23,39 +24,62 @@ class AppointmentFormDialog extends StatefulWidget {
 }
 
 class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
+  final now = DateTime.now();
+  final formKey = GlobalKey<FormState>();
   final editName = TextEditingController();
   final editFone = TextEditingController();
-  DateTime? editDate;
-  TimeOfDay? editTime;
-
-  @override
-  void dispose() {
-    editName.dispose();
-    editFone.dispose();
-    super.dispose();
-  }
+  final editDate = ValueNotifier<DateTime?>(null);
+  final editTime = ValueNotifier<TimeOfDay?>(null);
+  final loading = ValueNotifier<bool>(false);
+  final messageInvalidDate = ValueNotifier<String>("");
 
   @override
   void initState() {
-    if (widget.appointmentEdit != null) {
-      loadAppointment();
-    }
+    if (widget.appointmentEdit != null) loadAppointment();
     super.initState();
   }
 
   void loadAppointment() {
     final AppointmentModel appointment = widget.appointmentEdit!;
-    editDate = appointment.date;
-    editTime = TimeOfDay.fromDateTime(appointment.date);
+    editDate.value = appointment.date;
+    editTime.value = TimeOfDay.fromDateTime(appointment.date);
     editName.text = appointment.name;
     editFone.text = appointment.fone ?? '';
   }
 
+  bool isBeforeNow() {
+    final date = DateTime(editDate.value!.year, editDate.value!.month,
+        editDate.value!.day, editTime.value!.hour, editTime.value!.minute);
+    if (date.isBefore(now)) {
+      messageInvalidDate.value =
+          "A data e a hora não podem ser anteriores a agora";
+      return true;
+    }
+    messageInvalidDate.value = "";
+    return false;
+  }
+
+  Future<void> saveAppointment() async {
+    editDate.value ??= now;
+    editTime.value ??=
+        TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1)));
+
+    if (!loading.value && formKey.currentState!.validate() & !isBeforeNow()) {
+      loading.value = true;
+      final newAppointment = AppointmentModel(
+        id: widget.appointmentEdit?.id ?? '',
+        name: editName.text,
+        fone: editFone.text,
+        date: DateTime(editDate.value!.year, editDate.value!.month,
+            editDate.value!.day, editTime.value!.hour, editTime.value!.minute),
+      );
+      await widget.callback.call(newAppointment);
+      loading.value = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final loading = ValueNotifier<bool>(false);
-    final formKey = GlobalKey<FormState>();
-
     return Dialog(
         child: ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 600),
@@ -64,10 +88,13 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
         child: Form(
           key: formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.title,
-                style: context.textTheme.headlineSmall,
+              Center(
+                child: Text(
+                  widget.title,
+                  style: context.textTheme.headlineSmall,
+                ),
               ),
               const SizedBox(height: 20),
               AppFormField(
@@ -97,28 +124,49 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                 children: [
                   Flexible(
                     flex: 2,
-                    child: AppDate(
-                      label: "Selecione a data",
-                      initial: editDate,
-                      callback: (date) {
-                        Get.back();
-                        setState(() {
-                          editDate = date;
-                        });
-                      },
-                    ),
+                    child: AnimatedBuilder(
+                        animation: editDate,
+                        builder: (context, snapshot) {
+                          return AppDate(
+                            label: "Selecione a data",
+                            initial: editDate.value,
+                            callback: (date) {
+                              Get.back();
+                              editDate.value = date;
+                            },
+                          );
+                        }),
                   ),
                   const SizedBox(width: 10),
                   Flexible(
                     flex: 1,
-                    child: AppTime(
-                      label: "Selecione a hora",
-                      initial: editTime,
-                      confirm: (time) => editTime = time,
-                    ),
+                    child: AnimatedBuilder(
+                        animation: editTime,
+                        builder: (context, snapshot) {
+                          return AppTime(
+                            label: "Selecione a hora",
+                            initial: editTime.value,
+                            confirm: (time) => editTime.value = time,
+                          );
+                        }),
                   ),
                 ],
               ),
+              AnimatedBuilder(
+                  animation: messageInvalidDate,
+                  builder: (context, snapshot) {
+                    return Visibility(
+                      visible: messageInvalidDate.value.isNotEmpty,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
+                        child: Text(messageInvalidDate.value,
+                            style: context.textTheme.bodySmall?.copyWith(
+                                color: context.theme.colorScheme.error,
+                                fontSize: 12)),
+                      ),
+                    );
+                  }),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -128,34 +176,7 @@ class _AppointmentFormDialogState extends State<AppointmentFormDialog> {
                     label: "Cancelar",
                   ),
                   const SizedBox(width: 10),
-                  AnimatedBuilder(
-                      animation: loading,
-                      builder: (context, snapshot) {
-                        return AppButton(
-                          loading: loading.value,
-                          onPressed: () async {
-                            if (!loading.value &&
-                                formKey.currentState!.validate()) {
-                              loading.value = true;
-                              editDate ??= DateTime.now();
-                              editTime ??= TimeOfDay.now();
-                              final newAppointment = AppointmentModel(
-                                id: widget.appointmentEdit?.id ?? '',
-                                name: editName.text,
-                                fone: editFone.text,
-                                date: DateTime(
-                                    editDate!.year,
-                                    editDate!.month,
-                                    editDate!.day,
-                                    editTime!.hour,
-                                    editTime!.minute),
-                              );
-                              await widget.callback.call(newAppointment);
-                              loading.value = false;
-                            }
-                          },
-                        );
-                      }),
+                  AppButton(onPressed: saveAppointment),
                 ],
               )
             ],
