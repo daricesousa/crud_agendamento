@@ -49,7 +49,7 @@ class HomePage extends GetView<HomeController> {
                       padding: const EdgeInsets.all(8),
                       itemCount: controller.appointments.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: constraints.maxWidth ~/ 290,
+                        crossAxisCount: constraints.maxWidth ~/ 300,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                         mainAxisExtent: 105,
