@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'CRUD agendamento',
       initialBinding: AppBindings(),
+      debugShowCheckedModeBanner: false,
       getPages: AppPages.pages,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
